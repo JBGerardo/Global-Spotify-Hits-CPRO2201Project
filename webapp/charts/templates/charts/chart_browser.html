@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spotify Charts Browser</title>
+    <link
+      rel="stylesheet"
+      href="{% static 'charts/css/chart_browser.css' %}"
+    />
+  </head>
+  <body>
+    {% include "charts/partials/header.html" with active_page="browser" %}
+    <main class="page-container">
+      <h1>Spotify Charts Browser</h1>
+      <p class="subtitle">
+        Browse raw chart entries stored in SQLite. Use the filter to focus on a
+        specific country.
+      </p>
+
+      <form method="get" class="filter-form">
+        <label for="country">Filter by country:</label>
+        <select name="country" id="country">
+          <option value="">All countries</option>
+          {% for c in countries %}
+          <option
+            value="{{ c.code }}"
+            {% if c.code == country_query %}selected{% endif %}
+          >
+            {{ c.label }}
+          </option>
+          {% endfor %}
+        </select>
+        <button type="submit">Apply</button>
+        <a href="{% url 'chart_browser' %}">Clear</a>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Country</th>
+            <th>Position</th>
+            <th>Track</th>
+            <th>Artist</th>
+            <th>Streams</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in page_obj.object_list %}
+          <tr>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.pretty_country }}</td>
+            <td>{{ entry.position }}</td>
+            <td>{{ entry.track_name }}</td>
+            <td>{{ entry.artist }}</td>
+            <td>{{ entry.streams }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">No entries found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a
+          href="?country={{ country_query }}&page={{ page_obj.previous_page_number }}"
+          >&laquo; Prev</a
+        >
+        {% endif %}
+
+        <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a
+          href="?country={{ country_query }}&page={{ page_obj.next_page_number }}"
+          >Next &raquo;</a
+        >
+        {% endif %}
+      </div>
+    </main>
+  </body>
+</html>

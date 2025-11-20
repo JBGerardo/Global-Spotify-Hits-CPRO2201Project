@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Country Chart Diversity</title>
+    <link
+      rel="stylesheet"
+      href="{% static 'charts/css/country_diversity.css' %}"
+    />
+  </head>
+  <body>
+    {% include "charts/partials/header.html" with active_page="country_diversity" %}
+    <main class="page-container">
+      <h1>Top 10 Countries by Chart Diversity</h1>
+      <p class="subtitle">
+        Countries with the highest number of unique tracks appearing on their
+        Spotify charts.
+      </p>
+
+      <div class="chart-container">
+        <h2>Bar Chart</h2>
+        <img
+          src="data:image/png;base64,{{ chart_image }}"
+          alt="Country diversity bar chart"
+        />
+      </div>
+
+      <h2>Data Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Country</th>
+            <th>Unique Tracks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in diversity_rows %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ row.country_label }}</td>
+            <td>{{ row.unique_tracks }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
