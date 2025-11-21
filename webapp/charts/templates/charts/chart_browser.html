@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Spotify Charts Browser</title>
+    <title>Spotify Charts Browser (2023)</title>
     <link
       rel="stylesheet"
       href="{% static 'charts/css/chart_browser.css' %}"
@@ -11,78 +11,124 @@
   </head>
   <body>
     {% include "charts/partials/header.html" with active_page="browser" %}
+
     <main class="page-container">
-      <h1>Spotify Charts Browser</h1>
-      <p class="subtitle">
-        Browse raw chart entries stored in SQLite. Use the filter to focus on a
-        specific country.
-      </p>
+      <section class="page-card">
+        <h1>Spotify Charts Browser (2023)</h1>
+        <p class="subtitle">
+          Browse raw 2023 Spotify chart entries stored in SQLite. Use the search
+          and filters to focus on specific songs, artists, countries, months, or
+          explicit tracks.
+        </p>
 
-      <form method="get" class="filter-form">
-        <label for="country">Filter by country:</label>
-        <select name="country" id="country">
-          <option value="">All countries</option>
-          {% for c in countries %}
-          <option
-            value="{{ c.code }}"
-            {% if c.code == country_query %}selected{% endif %}
+        <form method="get" class="filter-form">
+          <!-- Country dropdown -->
+          <label for="country">Country:</label>
+          <select name="country" id="country">
+            <option value="">All countries</option>
+            {% for c in countries %}
+            <option
+              value="{{ c.code }}"
+              {% if c.code == country_query %}selected{% endif %}
+            >
+              {{ c.label }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <!-- Month dropdown -->
+          <label for="month">Month (2023):</label>
+          <select name="month" id="month">
+            <option value="">All months</option>
+            {% for m in months %}
+            <option
+              value="{{ m.value }}"
+              {% if m.value|stringformat:"i" == month_query %}
+                selected
+              {% endif %}
+            >
+              {{ m.label }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <!-- Search box (track or artist) -->
+          <label for="search">Search (track / artist):</label>
+          <input
+            type="text"
+            id="search"
+            name="search"
+            value="{{ search_query }}"
+            placeholder="e.g. Taylor Swift or Enchanted"
+          />
+
+          <!-- Explicit checkbox -->
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              name="explicit_only"
+              {% if explicit_only %}checked{% endif %}
+            />
+            Explicit only
+          </label>
+
+          <button type="submit">Apply</button>
+          <a href="{% url 'chart_browser' %}" class="clear-link">Clear</a>
+        </form>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Country</th>
+                <th>Position</th>
+                <th>Track</th>
+                <th>Artist</th>
+                <th>Streams</th>
+                <th>Explicit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in page_obj.object_list %}
+              <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.pretty_country }}</td>
+                <td>{{ entry.position }}</td>
+                <td>{{ entry.track_name }}</td>
+                <td>{{ entry.artist }}</td>
+                <td>{{ entry.streams }}</td>
+                <td>{% if entry.explicit %}Yes{% else %}No{% endif %}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7">No entries found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+          <a
+            href="?country={{ country_query }}&month={{ month_query }}&search={{ search_query }}{% if explicit_only %}&explicit_only=on{% endif %}&page={{ page_obj.previous_page_number }}"
+            >&laquo; Prev</a
           >
-            {{ c.label }}
-          </option>
-          {% endfor %}
-        </select>
-        <button type="submit">Apply</button>
-        <a href="{% url 'chart_browser' %}">Clear</a>
-      </form>
+          {% endif %}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Country</th>
-            <th>Position</th>
-            <th>Track</th>
-            <th>Artist</th>
-            <th>Streams</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for entry in page_obj.object_list %}
-          <tr>
-            <td>{{ entry.date }}</td>
-            <td>{{ entry.pretty_country }}</td>
-            <td>{{ entry.position }}</td>
-            <td>{{ entry.track_name }}</td>
-            <td>{{ entry.artist }}</td>
-            <td>{{ entry.streams }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6">No entries found.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
 
-      <div class="pagination">
-        {% if page_obj.has_previous %}
-        <a
-          href="?country={{ country_query }}&page={{ page_obj.previous_page_number }}"
-          >&laquo; Prev</a
-        >
-        {% endif %}
-
-        <span class="current">
-          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
-
-        {% if page_obj.has_next %}
-        <a
-          href="?country={{ country_query }}&page={{ page_obj.next_page_number }}"
-          >Next &raquo;</a
-        >
-        {% endif %}
-      </div>
+          {% if page_obj.has_next %}
+          <a
+            href="?country={{ country_query }}&month={{ month_query }}&search={{ search_query }}{% if explicit_only %}&explicit_only=on{% endif %}&page={{ page_obj.next_page_number }}"
+            >Next &raquo;</a
+          >
+          {% endif %}
+        </div>
+      </section>
     </main>
   </body>
 </html>

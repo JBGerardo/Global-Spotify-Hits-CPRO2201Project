@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Country Chart Diversity</title>
+    <title>Country Chart Diversity (2023)</title>
     <link
       rel="stylesheet"
       href="{% static 'charts/css/country_diversity.css' %}"
@@ -11,40 +11,50 @@
   </head>
   <body>
     {% include "charts/partials/header.html" with active_page="country_diversity" %}
+
     <main class="page-container">
-      <h1>Top 10 Countries by Chart Diversity</h1>
-      <p class="subtitle">
-        Countries with the highest number of unique tracks appearing on their
-        Spotify charts.
-      </p>
+      <section class="page-card">
+        <h1>Country Chart Diversity (2023)</h1>
+        <p class="subtitle">
+          Chart diversity measures how many unique tracks appear in each
+          country’s 2023 Spotify charts. Higher diversity means listeners are
+          hearing a wider mix of songs instead of the same few tracks on repeat.
+        </p>
 
-      <div class="chart-container">
-        <h2>Bar Chart</h2>
-        <img
-          src="data:image/png;base64,{{ chart_image }}"
-          alt="Country diversity bar chart"
-        />
-      </div>
+        <div class="chart-container">
+          <h2>Top 10 Countries by Unique Tracks</h2>
+          <img
+            src="data:image/png;base64,{{ chart_image }}"
+            alt="Bar chart of top 10 countries by chart diversity"
+          />
+        </div>
 
-      <h2>Data Table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Country</th>
-            <th>Unique Tracks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in diversity_rows %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ row.country_label }}</td>
-            <td>{{ row.unique_tracks }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <h2>Data Table</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Country</th>
+                <th>Unique Tracks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in diversity_rows %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.country_label }}</td>
+                <td>{{ row.unique_tracks }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3">No data available.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </body>
 </html>

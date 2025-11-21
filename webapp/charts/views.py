@@ -3,6 +3,7 @@ import base64
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 import matplotlib
 matplotlib.use("Agg")  # non-GUI backend for server use
@@ -16,8 +17,7 @@ from analysis.spotify_analysis import (
 )
 from charts.models import ChartEntry
 
-CSV_NAME = "charts_2023.csv"  # make sure this matches the filename in data/raw
-
+CSV_NAME = "charts_2023.csv"  # we are focusing on 2023 only
 
 # Mapping from code -> human-readable country name
 COUNTRY_NAME_MAP = {
@@ -88,6 +88,21 @@ COUNTRY_NAME_MAP = {
     "za": "South Africa",
 }
 
+MONTH_LABELS = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
 
 def pretty_country_label(code: str) -> str:
     """
@@ -99,6 +114,17 @@ def pretty_country_label(code: str) -> str:
     lower = code.lower()
     base_name = COUNTRY_NAME_MAP.get(lower, lower.upper())
     return f"{base_name} ({lower})"
+
+
+def landing_page(request):
+    """
+    Simple landing page with Spotify-like black + green theme.
+    Introduces the project and links to the main analysis pages.
+    """
+    context = {
+        "active_page": "home",
+    }
+    return render(request, "charts/landing.html", context)
 
 
 def top_songs_by_countries(request):
@@ -127,17 +153,15 @@ def top_songs_by_streams_view(request):
     df = load_spotify_charts(CSV_NAME)
     top_streams_df = compute_top_songs_by_streams(df, n=10)
 
-    # Build labels like "Song (Artist)" for x-axis
     labels = [
         f"{row.track_name} ({row.artist})"
         for row in top_streams_df.itertuples(index=False)
     ]
     values = top_streams_df["total_streams"].tolist()
 
-    # --- Create Matplotlib figure ---
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.bar(labels, values)
-    ax.set_title("Top 10 Songs by Total Global Streams")
+    ax.set_title("Top 10 Songs by Total Global Streams (2023)")
     ax.set_xlabel("Song (Artist)")
     ax.set_ylabel("Total Streams")
     plt.xticks(rotation=45, ha="right")
@@ -174,7 +198,7 @@ def country_diversity(request):
 
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.bar(countries, unique_tracks)
-    ax.set_title("Top 10 Countries by Chart Diversity (Unique Tracks)")
+    ax.set_title("Top 10 Countries by Chart Diversity (Unique Tracks, 2023)")
     ax.set_xlabel("Country")
     ax.set_ylabel("Number of Unique Tracks")
     plt.xticks(rotation=45, ha="right")
@@ -204,40 +228,79 @@ def country_diversity(request):
 def chart_browser(request):
     """
     View: browse raw ChartEntry rows from SQLite with
-    simple filtering (by country) and pagination.
-    """
-    country_query = (request.GET.get("country") or "").strip()
+    search + filtering (country, month, explicit) and pagination.
 
+    We focus on the 2023 dataset, so we filter by month instead of year.
+    """
+    # --- Read filters from query params ---
+    country_query = (request.GET.get("country") or "").strip()
+    search_query = (request.GET.get("search") or "").strip()
+    month_query = (request.GET.get("month") or "").strip()
+    explicit_only = request.GET.get("explicit_only") == "on"
+
+    # Base queryset
     qs = ChartEntry.objects.all().order_by("country", "date", "position")
 
+    # Filter by country code
     if country_query:
         qs = qs.filter(country__iexact=country_query)
 
+    # Search in track name OR artist
+    if search_query:
+        qs = qs.filter(
+            Q(track_name__icontains=search_query)
+            | Q(artist__icontains=search_query)
+        )
+
+    # Filter by month (1–12) — dataset is 2023 only
+    if month_query:
+        qs = qs.filter(date__month=month_query)
+
+    # Explicit checkbox
+    if explicit_only:
+        qs = qs.filter(explicit=True)
+
+    # Pagination (25 rows per page)
     paginator = Paginator(qs, 25)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    # Distinct countries (for dropdown)
     country_codes = (
         ChartEntry.objects.values_list("country", flat=True)
         .distinct()
         .order_by("country")
     )
-
     countries = [
-        {
-            "code": code,
-            "label": pretty_country_label(code),
-        }
+        {"code": code, "label": pretty_country_label(code)}
         for code in country_codes
     ]
 
+    # Distinct months (for dropdown)
+    months_raw = (
+        ChartEntry.objects.values_list("date__month", flat=True)
+        .distinct()
+        .order_by("date__month")
+    )
+    months = []
+    for m in months_raw:
+        if m is None:
+            continue
+        label = MONTH_LABELS.get(m, str(m))
+        months.append({"value": m, "label": label})
+
+    # Attach pretty labels on entries
     for entry in page_obj.object_list:
         entry.pretty_country = pretty_country_label(entry.country)
 
     context = {
         "page_obj": page_obj,
         "country_query": country_query,
+        "search_query": search_query,
+        "month_query": month_query,
+        "explicit_only": explicit_only,
         "countries": countries,
+        "months": months,
         "active_page": "browser",
     }
     return render(request, "charts/chart_browser.html", context)

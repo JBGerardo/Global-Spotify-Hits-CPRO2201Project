@@ -9,6 +9,12 @@
 
     <nav class="site-header__nav">
       <a
+        href="/"
+        class="site-header__link {% if active_page == 'home' %}is-active{% endif %}"
+      >
+        Home
+      </a>
+      <a
         href="/charts/top-songs/"
         class="site-header__link {% if active_page == 'top_songs' %}is-active{% endif %}"
       >

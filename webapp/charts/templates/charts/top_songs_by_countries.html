@@ -3,41 +3,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Top Songs by Number of Countries</title>
-    <link
-      rel="stylesheet"
-      href="{% static 'charts/css/top_songs.css' %}"
-    />
+    <title>Top Songs Across Countries (2023)</title>
+    <link rel="stylesheet" href="{% static 'charts/css/top_songs.css' %}" />
   </head>
   <body>
     {% include "charts/partials/header.html" with active_page="top_songs" %}
-    <main class="page-container">
-      <h1>Top Songs by Number of Countries</h1>
-      <p class="subtitle">
-        Showing the top {{ row_count }} songs that appear in the most countries
-        based on the Spotify charts dataset.
-      </p>
 
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Track Name</th>
-            <th>Artist</th>
-            <th>Number of Countries</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for song in songs %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ song.track_name }}</td>
-            <td>{{ song.artist }}</td>
-            <td>{{ song.country_count }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <main class="page-container">
+      <section class="page-card">
+        <h1>Top Songs Across Countries (2023)</h1>
+        <p class="subtitle">
+          These are the songs that appear in the highest number of countries
+          across the 2023 Spotify charts. Higher counts mean the track is a
+          truly global hit rather than just a local favourite.
+        </p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Track Name</th>
+                <th>Artist</th>
+                <th>Countries Appeared In</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for song in songs %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ song.track_name }}</td>
+                <td>{{ song.artist }}</td>
+                <td>{{ song.country_count }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4">No data available.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </body>
 </html>
