@@ -128,3 +128,19 @@ tbody tr:hover {
     padding: 1.4rem 1.1rem 1.3rem 1.1rem;
   }
 }
+
+.chart-container {
+  margin: 1.5rem 0;
+  background: #020617;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid #1db954;
+  overflow-x: auto;           
+}
+
+.chart-container img {
+  max-width: 100%;            
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}

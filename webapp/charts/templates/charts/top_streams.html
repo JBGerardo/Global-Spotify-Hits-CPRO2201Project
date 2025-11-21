@@ -37,15 +37,20 @@
           </tr>
         </thead>
         <tbody>
-          {% for song in songs %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ song.track_name }}</td>
-            <td>{{ song.artist }}</td>
-            <td>{{ song.total_streams }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
+            {% for track in tracks %}
+                <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ track.track_name }}</td>
+                <td>{{ track.artist }}</td>
+                <td>{{ track.total_streams|floatformat:0 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                <td colspan="4" class="empty-message">No data available.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
       </table>
     </main>
   </body>

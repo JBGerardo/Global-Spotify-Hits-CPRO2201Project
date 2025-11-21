@@ -18,6 +18,16 @@
           truly global hit rather than just a local favourite.
         </p>
 
+        {% if chart_image %}
+        <div class="chart-container">
+          <h2>Top 10 Global Hits by Countries Appeared In</h2>
+          <img
+            src="data:image/png;base64,{{ chart_image }}"
+            alt="Bar chart of top songs by number of countries"
+          />
+        </div>
+        {% endif %}
+
         <div class="table-wrapper">
           <table>
             <thead>
