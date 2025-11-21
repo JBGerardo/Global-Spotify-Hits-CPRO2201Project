@@ -1,7 +1,7 @@
 <header class="site-header">
   <div class="site-header__inner">
     <div class="site-header__brand">
-      <span class="site-header__title">Global Spotify Hits (2023)</span>
+      <span class="site-header__title">Global Spotify Hits</span>
       <span class="site-header__subtitle">
         Song Popularity Across Different Countries
       </span>
@@ -12,7 +12,13 @@
         href="/charts/top-songs/"
         class="site-header__link {% if active_page == 'top_songs' %}is-active{% endif %}"
       >
-        Top Songs
+        Top Songs by Countries
+      </a>
+      <a
+        href="/charts/top-streams/"
+        class="site-header__link {% if active_page == 'top_streams' %}is-active{% endif %}"
+      >
+        Top Songs by Streams
       </a>
       <a
         href="/charts/country-diversity/"

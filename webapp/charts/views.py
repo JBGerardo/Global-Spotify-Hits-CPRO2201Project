@@ -12,14 +12,14 @@ from analysis.spotify_analysis import (
     load_spotify_charts,
     compute_country_song_counts,
     compute_chart_diversity_by_country,
+    compute_top_songs_by_streams,
 )
 from charts.models import ChartEntry
 
 CSV_NAME = "charts_2023.csv"  # make sure this matches the filename in data/raw
 
 
-# Simple mapping from ISO-like codes to human-readable country names.
-# We don't need every country in the world, just the ones that might appear.
+# Mapping from code -> human-readable country name
 COUNTRY_NAME_MAP = {
     "au": "Australia",
     "ca": "Canada",
@@ -114,8 +114,50 @@ def top_songs_by_countries(request):
     context = {
         "songs": songs,
         "row_count": len(country_counts),
+        "active_page": "top_songs",
     }
     return render(request, "charts/top_songs_by_countries.html", context)
+
+
+def top_songs_by_streams_view(request):
+    """
+    View: show the top 10 songs by total global streams.
+    Uses Pandas + Matplotlib for a bar chart.
+    """
+    df = load_spotify_charts(CSV_NAME)
+    top_streams_df = compute_top_songs_by_streams(df, n=10)
+
+    # Build labels like "Song (Artist)" for x-axis
+    labels = [
+        f"{row.track_name} ({row.artist})"
+        for row in top_streams_df.itertuples(index=False)
+    ]
+    values = top_streams_df["total_streams"].tolist()
+
+    # --- Create Matplotlib figure ---
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(labels, values)
+    ax.set_title("Top 10 Songs by Total Global Streams")
+    ax.set_xlabel("Song (Artist)")
+    ax.set_ylabel("Total Streams")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png")
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    plt.close(fig)
+
+    chart_base64 = base64.b64encode(image_png).decode("utf-8")
+
+    context = {
+        "songs": top_streams_df.to_dict(orient="records"),
+        "chart_image": chart_base64,
+        "active_page": "top_streams",
+    }
+    return render(request, "charts/top_streams.html", context)
 
 
 def country_diversity(request):
@@ -126,12 +168,10 @@ def country_diversity(request):
     df = load_spotify_charts(CSV_NAME)
     diversity_df = compute_chart_diversity_by_country(df).head(10)
 
-    # Use pretty labels for the chart, but keep codes in DB
     countries_raw = diversity_df["country"].tolist()
     countries = [pretty_country_label(code) for code in countries_raw]
     unique_tracks = diversity_df["unique_tracks"].tolist()
 
-    # --- Create Matplotlib figure ---
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.bar(countries, unique_tracks)
     ax.set_title("Top 10 Countries by Chart Diversity (Unique Tracks)")
@@ -149,7 +189,6 @@ def country_diversity(request):
 
     chart_base64 = base64.b64encode(image_png).decode("utf-8")
 
-    # Also pass pretty labels to the table
     diversity_rows = diversity_df.to_dict(orient="records")
     for row in diversity_rows:
         row["country_label"] = pretty_country_label(row["country"])
@@ -157,6 +196,7 @@ def country_diversity(request):
     context = {
         "diversity_rows": diversity_rows,
         "chart_image": chart_base64,
+        "active_page": "country_diversity",
     }
     return render(request, "charts/country_diversity.html", context)
 
@@ -177,14 +217,12 @@ def chart_browser(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # Distinct country codes from DB
     country_codes = (
         ChartEntry.objects.values_list("country", flat=True)
         .distinct()
         .order_by("country")
     )
 
-    # Build list of {code, label} for the dropdown
     countries = [
         {
             "code": code,
@@ -193,7 +231,6 @@ def chart_browser(request):
         for code in country_codes
     ]
 
-    # Add pretty labels to table rows, too
     for entry in page_obj.object_list:
         entry.pretty_country = pretty_country_label(entry.country)
 
@@ -201,5 +238,6 @@ def chart_browser(request):
         "page_obj": page_obj,
         "country_query": country_query,
         "countries": countries,
+        "active_page": "browser",
     }
     return render(request, "charts/chart_browser.html", context)

@@ -8,6 +8,11 @@ urlpatterns = [
         name="top_songs_by_countries",
     ),
     path(
+        "top-streams/",
+        views.top_songs_by_streams_view,
+        name="top_songs_by_streams",
+    ),
+    path(
         "country-diversity/",
         views.country_diversity,
         name="country_diversity",

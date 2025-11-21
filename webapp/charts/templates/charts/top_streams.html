@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Top Songs by Total Streams</title>
+    <link
+      rel="stylesheet"
+      href="{% static 'charts/css/top_streams.css' %}"
+    />
+  </head>
+  <body>
+    {% include "charts/partials/header.html" with active_page="top_streams" %}
+    <main class="page-container">
+      <h1>Top 10 Songs by Total Global Streams</h1>
+      <p class="subtitle">
+        Songs with the highest total number of streams across all included
+        countries in the 2023 Spotify charts.
+      </p>
+
+      <div class="chart-container">
+        <h2>Bar Chart</h2>
+        <img
+          src="data:image/png;base64,{{ chart_image }}"
+          alt="Top songs by total streams bar chart"
+        />
+      </div>
+
+      <h2>Data Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Track Name</th>
+            <th>Artist</th>
+            <th>Total Streams</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for song in songs %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ song.track_name }}</td>
+            <td>{{ song.artist }}</td>
+            <td>{{ song.total_streams }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
