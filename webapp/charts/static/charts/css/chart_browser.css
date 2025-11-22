@@ -1,4 +1,4 @@
-/* ===== Base + Spotify-like theme ===== */
+/* ===== Base  ===== */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -21,220 +21,279 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
 }
 
 .site-header__brand {
   display: flex;
   flex-direction: column;
+  gap: 0.1rem;
 }
 
 .site-header__title {
-  font-weight: 650;
   font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .site-header__subtitle {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #9ca3af;
 }
 
-.site-header__nav {
+/* Simple pill navigation */
+.site-nav {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.75rem;
+  align-items: center;
 }
 
-.site-header__link {
-  color: #e5e7eb;
-  text-decoration: none;
+.site-nav a {
   font-size: 0.9rem;
-  padding: 0.35rem 0.8rem;
+  text-decoration: none;
+  color: #d1d5db;
+  padding: 0.35rem 0.6rem;
   border-radius: 999px;
   border: 1px solid transparent;
 }
 
-.site-header__link:hover {
-  background-color: #111827;
-  border-color: #374151;
-}
-
-.site-header__link.is-active {
-  background-color: #1db954;
+.site-nav a:hover {
   border-color: #1db954;
-  color: #04120a;
+  background-color: rgba(17, 24, 39, 0.8);
 }
 
-/* ===== Page layout ===== */
+.site-nav a.is-active {
+  background-color: #1db954;
+  color: #000;
+}
+
+/* ===== Page container and heading ===== */
+
 .page-container {
   max-width: 1120px;
-  margin: 2.5rem auto 3rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
 }
 
-.page-card {
-  background: rgba(12, 12, 12, 0.95);
-  border-radius: 1.25rem;
-  padding: 1.8rem 1.6rem 1.6rem 1.6rem;
-  border: 1px solid #1f2933;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
-}
-
-.page-card h1 {
-  margin-top: 0;
-  margin-bottom: 0.6rem;
-  font-size: 1.5rem;
+.page-container h1 {
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .subtitle {
-  color: #d1d5db;
-  margin-bottom: 1.4rem;
+  margin: 0 0 1.3rem 0;
+  color: #e5e7eb;
   font-size: 0.95rem;
 }
 
 /* ===== Filter form ===== */
-.filter-form {
-  margin-bottom: 1.4rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: center;
-  font-size: 0.9rem;
+
+/* Layout for the filters row */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.filter-form label {
+/* Wrapper for each form control */
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Label text for each filter control */
+.filter-field label {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+/* Shared input and select styles */
+.filter-field select,
+.filter-field input[type="text"] {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #374151;
+  background-color: rgba(15, 23, 42, 0.9);
+  color: #f9fafb;
+  font-size: 0.85rem;
+}
+
+.filter-field select:focus,
+.filter-field input[type="text"]:focus {
+  outline: none;
+  border-color: #1db954;
+  box-shadow: 0 0 0 1px #1db954;
+}
+
+/* Checkbox and label for "Explicit only" toggle */
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
   color: #e5e7eb;
 }
 
-.filter-form select,
-.filter-form input[type="text"],
-.filter-form button {
-  padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
+/* Submit button for filters */
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  margin-top: 0.25rem;
+}
+
+.filter-actions button {
+  padding: 0.45rem 0.9rem;
   border-radius: 999px;
-  border: 1px solid #374151;
-  background-color: #111827;
-  color: #f9fafb;
-}
-
-.filter-form input[type="text"] {
-  min-width: 220px;
-}
-
-.filter-form select:focus,
-.filter-form input[type="text"]:focus {
-  outline: none;
-  border-color: #1db954;
-}
-
-.filter-form button {
+  border: none;
   background-color: #1db954;
-  border-color: #1db954;
-  color: #04120a;
+  color: #000;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-.filter-form button:hover {
-  background-color: #1ed760;
-  border-color: #1ed760;
+.filter-actions button:hover {
+  background-color: #22c55e;
 }
 
-.checkbox-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
+/* ===== Table + scroll container ===== */
 
-.filter-form input[type="checkbox"] {
-  accent-color: #1db954;
-}
-
-.clear-link {
-  text-decoration: none;
-  color: #9ca3af;
-  font-size: 0.85rem;
-}
-
-.clear-link:hover {
-  text-decoration: underline;
-}
-
-/* ===== Table ===== */
+/* Container adds background and shadow around the table */
 .table-wrapper {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  background: rgba(12, 12, 12, 0.9);
+  border-radius: 1rem;
+  border: 1px solid #1f2933;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* Scroll area inside table wrapper to allow horizontal scrolling on small screens */
+.table-scroll {
+  width: 100%;
   overflow-x: auto;
 }
 
+/* Base table styles */
 table {
-  border-collapse: collapse;
   width: 100%;
-  background: #020617;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+thead {
+  background: rgba(15, 23, 42, 0.9);
 }
 
 th,
 td {
-  padding: 0.5rem 0.7rem;
-  border-bottom: 1px solid #111827;
+  padding: 0.55rem 0.7rem;
   text-align: left;
-  font-size: 0.88rem;
+  border-bottom: 1px solid #1f2937;
 }
 
 th {
-  background-color: #020617;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+td {
   color: #e5e7eb;
-  border-bottom: 1px solid #1db954;
 }
 
-tbody tr:hover {
-  background-color: #030712;
+/* Alternate row coloring for readability */
+tbody tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.5);
 }
 
-/* ===== Pagination ===== */
+/* Right-aligned numeric columns */
+.col-position,
+.col-streams {
+  text-align: right;
+}
+
+/* Slightly narrower date column on wide screens */
+.col-date {
+  white-space: nowrap;
+}
+
+/* When there are no rows to show */
+.empty-message {
+  text-align: center;
+  padding: 1rem;
+  color: #9ca3af;
+}
+
+/* ===== Pagination controls ===== */
+
 .pagination {
-  margin-top: 1rem;
   display: flex;
-  gap: 0.6rem;
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
 }
 
-.pagination a {
-  padding: 0.3rem 0.7rem;
+.pagination__info {
+  color: #9ca3af;
+}
+
+/* Container for previous/next links */
+.pagination__links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Basic link styling for pagination */
+.pagination__links a,
+.pagination__links span {
+  padding: 0.3rem 0.6rem;
   border-radius: 999px;
-  border: 1px solid #374151;
   text-decoration: none;
+  font-weight: 500;
+}
+
+/* Enabled pagination links */
+.pagination__links a {
+  background-color: rgba(17, 24, 39, 0.9);
   color: #e5e7eb;
-  background-color: #020617;
 }
 
-.pagination a:hover {
-  border-color: #1db954;
-  color: #1db954;
+/* Disabled state when there is no next/previous page */
+.pagination__links span {
+  background-color: rgba(31, 41, 55, 0.7);
+  color: #6b7280;
 }
 
-.pagination .current {
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid #1db954;
-  background-color: #1db954;
-  color: #04120a;
+/* ===== Responsive adjustments ===== */
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-/* ===== Responsive tweaks ===== */
-@media (max-width: 768px) {
-  .page-card {
-    padding: 1.4rem 1.1rem 1.3rem 1.1rem;
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .filter-form {
-    flex-direction: column;
-    align-items: flex-start;
+  .page-container {
+    padding-inline: 0.75rem;
   }
 
-  .filter-form input[type="text"],
-  .filter-form select {
-    width: 100%;
+  .site-header__inner {
+    padding-inline: 0.75rem;
+  }
+
+  .site-nav {
+    gap: 0.4rem;
+  }
+
+  .site-nav a {
+    font-size: 0.8rem;
+    padding-inline: 0.45rem;
   }
 }

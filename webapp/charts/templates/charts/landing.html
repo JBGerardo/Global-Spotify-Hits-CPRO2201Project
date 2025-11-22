@@ -1,3 +1,5 @@
+<!-- Overview page introducing the project and linking to each analysis view (top streams, global hits, diversity, browser). -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -12,60 +14,87 @@
   <body>
     {% include "charts/partials/header.html" with active_page="home" %}
 
+    {# Main content area for this page #}
     <main class="landing-main">
       <section class="landing-hero">
-        <div class="landing-hero__text">
-          <h1>Global Spotify Hits of 2023</h1>
-          <p class="landing-hero__subtitle">
-            Explore how songs travel across the world: which tracks dominate
-            global charts, how diverse each country is, and which artists rack
-            up the most streams.
+        <div class="landing-hero__content">
+          <h1>Global Spotify Hits – 2023 Charts Overview</h1>
+          <p>
+            This dashboard explores a 2023 Spotify charts dataset, focusing on
+            three questions:
           </p>
-
-          <div class="landing-hero__actions">
-            <a href="/charts/top-songs/" class="btn btn--primary">
-              View Top Global Songs
-            </a>
-            <a href="/charts/browser/" class="btn btn--ghost">
-              Browse Raw Chart Data
-            </a>
-          </div>
-
-          <p class="landing-hero__note">
-            Built with Python (Pandas, NumPy, Matplotlib) and Django, using a
-            2023 Spotify charts dataset.
-          </p>
+          <ul class="landing-hero__list">
+            <li>Which songs are the biggest global hits by total streams?</li>
+            <li>
+              Which songs appear in the largest number of countries' charts?
+            </li>
+            <li>
+              How diverse are different countries' charts in terms of unique
+              tracks?
+            </li>
+          </ul>
         </div>
+
+        <aside class="landing-hero__panel">
+
       </section>
 
       <section class="landing-grid">
         <article class="landing-card">
-          <h2>Top Songs Across Countries</h2>
+          <h2>Top Global Streams</h2>
           <p>
-            See which tracks appear in the highest number of countries. This
-            helps identify truly global hits, not just local favorites.
+            Ranks songs by total global streams, combining counts across all
+            included countries for 2023.
           </p>
-          <a href="/charts/top-songs/" class="landing-card__link">
-            Go to Top Songs →
+          <p class="landing-card__footnote">
+            Demonstrates aggregation using the Django ORM and plotting with
+            Matplotlib.
+          </p>
+          <a href="/charts/top-streams/" class="landing-card__link">
+            View Top Streams
           </a>
         </article>
 
         <article class="landing-card">
-          <h2>Country Chart Diversity</h2>
+          <h2>Global Hit Songs</h2>
           <p>
-            Compare how many unique tracks each country’s chart contains.
-            Countries with higher diversity play a wider mix of music on repeat.
+            Shows which songs appear in the largest number of country charts,
+            giving a different view of what it means to be a "global hit."
+          </p>
+          <p class="landing-card__footnote">
+            Uses distinct counts over countries and highlights songs that travel
+            well across regions.
+          </p>
+          <a href="/charts/top-songs/" class="landing-card__link">
+            View Global Hits
+          </a>
+        </article>
+
+        <article class="landing-card">
+          <h2>Country Diversity</h2>
+          <p>
+            Compares how many unique tracks appear in each country's chart,
+            which reflects how varied different markets are.
+          </p>
+          <p class="landing-card__footnote">
+            Uses group-by logic to count distinct tracks per country and plots
+            the results in a bar chart.
           </p>
           <a href="/charts/country-diversity/" class="landing-card__link">
-            View Diversity Chart →
+            View Diversity
           </a>
         </article>
 
         <article class="landing-card">
           <h2>Database Browser</h2>
           <p>
-            Search the SQLite-backed dataset by song, artist, country, year, and
-            explicit flag. Great for digging into specific songs or regions.
+            Search the SQLite-backed dataset by song, artist, country, month,
+            and explicit flag. Useful for digging into specific songs or
+            regions.
+          </p>
+          <p class="landing-card__footnote">
+            Demonstrates server-side filtering, pagination, and a simple table
+            view over the raw chart rows.
           </p>
           <a href="/charts/browser/" class="landing-card__link">
             Open Browser →
