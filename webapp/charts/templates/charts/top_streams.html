@@ -1,9 +1,11 @@
+<!-- Page showing the top 10 songs by total streams across all countries, with a Matplotlib bar chart and a summary table. -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Top Songs by Total Streams</title>
+    <title>Top Global Streams – Global Spotify Hits</title>
     <link
       rel="stylesheet"
       href="{% static 'charts/css/top_streams.css' %}"
@@ -11,6 +13,8 @@
   </head>
   <body>
     {% include "charts/partials/header.html" with active_page="top_streams" %}
+
+    {# Main content area for this page #}
     <main class="page-container">
       <h1>Top 10 Songs by Total Global Streams</h1>
       <p class="subtitle">
@@ -18,39 +22,38 @@
         countries in the 2023 Spotify charts.
       </p>
 
-      <div class="chart-container">
+      <section class="chart-container">
         <h2>Bar Chart</h2>
         <img
           src="data:image/png;base64,{{ chart_image }}"
           alt="Top songs by total streams bar chart"
         />
-      </div>
+      </section>
 
       <h2>Data Table</h2>
       <table>
         <thead>
           <tr>
             <th>#</th>
-            <th>Track Name</th>
+            <th>Track</th>
             <th>Artist</th>
             <th>Total Streams</th>
           </tr>
         </thead>
         <tbody>
-            {% for track in tracks %}
-                <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ track.track_name }}</td>
-                <td>{{ track.artist }}</td>
-                <td>{{ track.total_streams|floatformat:0 }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                <td colspan="4" class="empty-message">No data available.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-
+          {% for track in tracks %}
+          <tr>
+            <td class="rank-cell">{{ forloop.counter }}</td>
+            <td>{{ track.track_name }}</td>
+            <td>{{ track.artist }}</td>
+            <td class="streams-cell">{{ track.total_streams }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="empty-message">No data available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
     </main>
   </body>

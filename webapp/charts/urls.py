@@ -1,8 +1,16 @@
+"""
+URL configuration for the charts app.
+
+These URLs are included under the "/charts/" prefix in the project-level
+urls.py file. Each path points to a simple function-based view in
+charts/views.py.
+"""
+
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Landing page for charts
+    # Landing page for the charts section
     path("", views.landing_page, name="landing"),
 
     # Top tracks by total streams (2023)
