@@ -1,3 +1,22 @@
+"""
+Custom Django management command to load Spotify charts data into the database.
+
+Usage examples:
+
+    python manage.py load_charts
+    python manage.py load_charts --file charts_2023.csv
+    python manage.py load_charts --file charts_2023.csv --limit 1000
+
+This command:
+
+1. Uses the existing load_spotify_charts function to read the CSV file
+   and normalise column names.
+2. Optionally limits the number of rows for testing.
+3. Deletes existing ChartEntry rows (so reruns are easy during development).
+4. Iterates over the DataFrame and creates ChartEntry objects.
+5. Uses bulk_create inside a transaction for better performance.
+"""
+
 import math
 from pathlib import Path
 
@@ -9,14 +28,33 @@ from analysis.spotify_analysis import load_spotify_charts
 
 
 class Command(BaseCommand):
+    """
+    Django management command class.
+
+    Django discovers this command because:
+    - It is in charts/management/commands/
+    - The file name is load_charts.py
+    - The class is named Command and subclasses BaseCommand.
+    """
+
     help = "Load Spotify chart data from CSV into the ChartEntry model."
 
     def add_arguments(self, parser):
+        """
+        Define command-line arguments.
+
+        --file:
+            Name of the CSV file inside the data/raw folder at the project root.
+            The default is charts_2023.csv, which matches this project.
+        --limit:
+            Optional integer. If provided, we only load the first N rows
+            from the CSV. This is mainly for quick testing.
+        """
         parser.add_argument(
             "--file",
             type=str,
             default="charts_2023.csv",
-            help="CSV file name located in data/raw (default: charts_2023.csv)",
+            help="CSV file name located in data/raw (default: charts_2023.csv).",
         )
         parser.add_argument(
             "--limit",
@@ -25,22 +63,31 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Main entry point when the command is run.
+
+        We:
+        - Read options from the command line.
+        - Ask load_spotify_charts to load and clean the CSV into a DataFrame.
+        - Check that required columns exist.
+        - Delete existing ChartEntry rows.
+        - Convert each DataFrame row into a ChartEntry object.
+        - Bulk insert all new rows in one transaction.
+        """
         csv_name = options["file"]
         limit = options.get("limit")
 
-        # Project root = one level above 'webapp'
-        project_root = Path(__file__).resolve().parents[4]
-        data_dir = project_root / "data" / "raw"
-        csv_path = data_dir / csv_name
+        # We let load_spotify_charts handle the actual path resolution and
+        # FileNotFoundError. We wrap that in CommandError so the CLI output
+        # is nice and consistent with other Django commands.
+        try:
+            df = load_spotify_charts(csv_name)
+        except FileNotFoundError as exc:
+            # CommandError makes Django show the message and exit with a
+            # non-zero status code.
+            raise CommandError(str(exc)) from exc
 
-        if not csv_path.exists():
-            raise CommandError(f"CSV file not found at: {csv_path}")
-
-        self.stdout.write(self.style.NOTICE(f"Loading data from: {csv_path}"))
-
-        # Use our existing loader, which normalizes column names
-        df = load_spotify_charts(csv_name)
-
+        # If a limit is given, take only the first N rows.
         if limit is not None:
             df = df.head(limit)
 
@@ -61,31 +108,40 @@ class Command(BaseCommand):
         if missing:
             raise CommandError(f"Missing required columns in DataFrame: {missing}")
 
-        # Optional: clear existing data first (ok for now, makes reruns easy)
+        # Optional but convenient during development:
+        # We clear existing data so that rerunning the command replaces it
+        # with a fresh copy from the CSV.
+        self.stdout.write(self.style.WARNING("Deleting existing ChartEntry rows..."))
         ChartEntry.objects.all().delete()
-        self.stdout.write(self.style.WARNING("Existing ChartEntry rows deleted."))
 
         rows_to_create = []
 
-        # Iterate over DataFrame rows
+        # Iterate over each row of the DataFrame.
+        #
+        # itertuples is a simple way to loop over rows and access columns
+        # as attributes:
+        #   for row in df.itertuples(index=False):
+        #       row.track_name, row.country, row.streams, ...
         for row in df.itertuples(index=False):
             try:
-                # date: ensure it's a plain 'YYYY-MM-DD' string
+                # date: convert to a plain 'YYYY-MM-DD' string
                 date_val = getattr(row, "date")
-                date_str = str(date_val).split(" ")[0] if date_val is not None else None
+                if date_val is not None:
+                    # If the date has a time part, we keep only the date part.
+                    date_str = str(date_val).split(" ")[0]
+                else:
+                    date_str = None
 
-                # explicit: robust bool conversion
+                # explicit: robust conversion to a boolean value.
                 explicit_val = getattr(row, "explicit")
                 if isinstance(explicit_val, str):
                     explicit_val = explicit_val.strip().lower() in ("1", "true", "yes")
                 else:
                     explicit_val = bool(explicit_val)
 
-                # duration: may be NaN or None
+                # duration: may be NaN or None. We convert NaN to None.
                 duration_val = getattr(row, "duration", None)
-                if duration_val is not None and isinstance(duration_val, float) and math.isnan(
-                    duration_val
-                ):
+                if isinstance(duration_val, float) and math.isnan(duration_val):
                     duration_val = None
 
                 entry = ChartEntry(
@@ -103,6 +159,9 @@ class Command(BaseCommand):
                 rows_to_create.append(entry)
 
             except Exception as exc:
+                # If anything goes wrong for a single row (for example,
+                # bad date format), we skip it and continue. We also log
+                # the error to stderr so it is visible in the console.
                 self.stderr.write(f"Skipping row due to error: {exc}")
                 continue
 
@@ -110,8 +169,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("No rows to create."))
             return
 
+        # Bulk insert all rows in a single transaction. If anything fails,
+        # the transaction is rolled back and no partial data is written.
         self.stdout.write(f"Creating {len(rows_to_create)} ChartEntry rows...")
         with transaction.atomic():
             ChartEntry.objects.bulk_create(rows_to_create, batch_size=1000)
 
-        self.stdout.write(self.style.SUCCESS(f"Finished loading {len(rows_to_create)} rows."))
+        self.stdout.write(
+            self.style.SUCCESS(f"Finished loading {len(rows_to_create)} rows.")
+        )

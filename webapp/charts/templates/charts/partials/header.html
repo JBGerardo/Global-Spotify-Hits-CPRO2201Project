@@ -1,40 +1,45 @@
+{# Shared header/navigation bar for all pages #}
 <header class="site-header">
   <div class="site-header__inner">
     <div class="site-header__brand">
-      <span class="site-header__title">Global Spotify Hits</span>
-      <span class="site-header__subtitle">
+      <div class="site-header__title">Global Spotify Hits</div>
+      <div class="site-header__subtitle">
         Song Popularity Across Different Countries
-      </span>
+      </div>
     </div>
 
-    <nav class="site-header__nav">
+    <nav class="site-nav">
       <a
         href="/"
-        class="site-header__link {% if active_page == 'home' %}is-active{% endif %}"
+        class="{% if active_page == 'home' %}is-active{% endif %}"
       >
         Home
       </a>
+
       <a
         href="/charts/top-songs/"
-        class="site-header__link {% if active_page == 'top_songs' %}is-active{% endif %}"
+        class="{% if active_page == 'top_songs' %}is-active{% endif %}"
       >
         Top Songs by Countries
       </a>
+
       <a
         href="/charts/top-streams/"
-        class="site-header__link {% if active_page == 'top_streams' %}is-active{% endif %}"
+        class="{% if active_page == 'top_streams' %}is-active{% endif %}"
       >
         Top Songs by Streams
       </a>
+
       <a
         href="/charts/country-diversity/"
-        class="site-header__link {% if active_page == 'country_diversity' %}is-active{% endif %}"
+        class="{% if active_page == 'country_diversity' %}is-active{% endif %}"
       >
         Country Diversity
       </a>
+
       <a
         href="/charts/browser/"
-        class="site-header__link {% if active_page == 'browser' %}is-active{% endif %}"
+        class="{% if active_page == 'browser' %}is-active{% endif %}"
       >
         Database Browser
       </a>

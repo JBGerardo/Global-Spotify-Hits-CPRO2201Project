@@ -1,9 +1,11 @@
+<!-- Page summarising how many unique tracks each country has in its charts, with a bar chart and a table. -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Country Chart Diversity (2023)</title>
+    <title>Country Chart Diversity – Global Spotify Hits</title>
     <link
       rel="stylesheet"
       href="{% static 'charts/css/country_diversity.css' %}"
@@ -12,49 +14,42 @@
   <body>
     {% include "charts/partials/header.html" with active_page="country_diversity" %}
 
+    {# Main content area for this page #}
     <main class="page-container">
-      <section class="page-card">
-        <h1>Country Chart Diversity (2023)</h1>
-        <p class="subtitle">
-          Chart diversity measures how many unique tracks appear in each
-          country’s 2023 Spotify charts. Higher diversity means listeners are
-          hearing a wider mix of songs instead of the same few tracks on repeat.
-        </p>
+      <h1>Country Chart Diversity</h1>
+      <p class="subtitle">
+        How many unique tracks appear in each country's Spotify chart for 2023.
+      </p>
 
-        <div class="chart-container">
-          <h2>Top 10 Countries by Unique Tracks</h2>
-          <img
-            src="data:image/png;base64,{{ chart_image }}"
-            alt="Bar chart of top 10 countries by chart diversity"
-          />
-        </div>
-
-        <h2>Data Table</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Country</th>
-                <th>Unique Tracks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in diversity_rows %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ row.country_label }}</td>
-                <td>{{ row.unique_tracks }}</td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="3">No data available.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <section class="chart-container">
+        <h2>Bar Chart</h2>
+        <img
+          src="data:image/png;base64,{{ chart_image }}"
+          alt="Unique tracks per country bar chart"
+        />
       </section>
+
+      <h2>Data Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Unique Tracks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in diversity_rows %}
+          <tr>
+            <td>{{ row.country_label }}</td>
+            <td class="tracks-cell">{{ row.unique_tracks }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="2" class="empty-message">No data available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </main>
   </body>
 </html>

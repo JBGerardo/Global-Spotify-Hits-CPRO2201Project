@@ -1,11 +1,19 @@
+"""
+Project-level URL configuration for the Global Spotify Hits web app.
+
+- expose the Django admin under "/admin/"
+- route the root URL ("/") to the charts landing page
+- include all charts-related URLs under the "/charts/" prefix
+"""
+
 from django.contrib import admin
 from django.urls import path, include
 
-# Use views from the charts app for the landing page
+# Import the landing page view from the charts app
 from charts import views as charts_views
 
 urlpatterns = [
-    # Django admin
+    # Django admin interface
     path("admin/", admin.site.urls),
 
     # Root URL → charts landing page
