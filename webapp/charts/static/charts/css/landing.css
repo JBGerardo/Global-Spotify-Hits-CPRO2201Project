@@ -1,229 +1,359 @@
 /* ==========================================================================
    File: landing.css
-   Description: Landing page layout and Spotify-inspired theme, including hero
-                section and feature cards for the main navigation.
-   Project: Global Spotify Hits – CPRO 2201 (Python II)
+   Description: Modern Data-Stream aesthetic with Spotify branding.
    ========================================================================== */
 
-/* ===== Base + Spotify-like theme ===== */
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: radial-gradient(circle at top left, #1db954 0, #000 45%, #000 100%);
-  color: #f9fafb;
+:root {
+  --spotify-green: #1db954;
+  --spotify-green-hover: #1ed760;
+  --spotify-black: #121212;
+  --spotify-dark-gray: #181818;
+  --spotify-light-gray: #282828;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --card-bg: rgba(24, 24, 24, 0.7); /* Transparent for glassmorphism */
+  --card-border: rgba(255, 255, 255, 0.1);
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ===== Shared header styling ===== */
+/* ===== Base Setup & Background Design ===== */
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: #000;
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative; /* Needed for pseudo-element positioning */
+
+  /* Layer 1: Subtle technical grid pattern */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-attachment: fixed;
+}
+
+/* Layer 2: Floating Music Note (Top Right) */
+body::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  /* Encoded SVG Music Note with low opacity white fill */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,0.05)'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: -2; /* Behind the glow spots */
+  transform: rotate(15deg);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* Layer 3: Floating Sound Wave (Bottom Left) */
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -15%;
+  left: -15%;
+  width: 800px;
+  height: 800px;
+  /* Encoded SVG Sound Wave with low opacity Spotify Green fill */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(29, 185, 84, 0.08)'%3E%3Cpath d='M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: -2; /* Behind the glow spots */
+  transform: rotate(-10deg);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* ===== Ambient Background Glows (Layer 4) ===== */
+.ambient-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(29, 185, 84, 0.15) 0%, rgba(0,0,0,0) 70%);
+  z-index: -1; /* Sits above the music icons but behind content */
+  pointer-events: none;
+}
+
+.top-left { top: -200px; left: -200px; }
+.bottom-right { bottom: -200px; right: -200px; }
+
+/* ===== Layout & Hero ===== */
+.landing-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  position: relative;
+  z-index: 1; /* Ensure content sits above background elements */
+}
+
+.landing-hero {
+  text-align: center;
+  margin-bottom: 4rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(29, 185, 84, 0.2);
+  color: var(--spotify-green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(29, 185, 84, 0.4);
+}
+
+.landing-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, #fff, #b3b3b3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-hero p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* ===== Card Grid ===== */
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.landing-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px); /* Glass effect */
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover Effects */
+.landing-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--spotify-green);
+  box-shadow: 0 10px 30px -10px rgba(29, 185, 84, 0.2);
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--spotify-green);
+  transition: background 0.3s;
+}
+
+.landing-card:hover .card-icon {
+  background: var(--spotify-green);
+  color: #000;
+}
+
+.card-content {
+  flex-grow: 1;
+}
+
+.landing-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary);
+}
+
+.landing-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.8rem 0;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--spotify-green);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background-color: var(--spotify-green-hover);
+  transform: scale(1.02);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  border-color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .landing-hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .landing-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .landing-main {
+    padding-top: 2rem;
+  }
+}
+
+/* ===== Header Styles ===== */
+
 .site-header {
-  background-color: #000000;
-  color: #f9fafb;
-  border-bottom: 1px solid #111827;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  backdrop-filter: blur(12px);      /* The glass blur effect */
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .site-header__inner {
-  max-width: 1120px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: 0 1.5rem;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.site-header__brand {
+/* Brand Logo */
+.site-brand {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
 }
 
-.site-header__title {
+.site-brand__icon {
+  color: #1db954; /* Spotify Green */
+  background: rgba(29, 185, 84, 0.1);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+}
+
+.site-brand__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.site-brand__text {
+  font-weight: 800;
   font-size: 1.1rem;
-  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-.site-header__subtitle {
-  font-size: 0.8rem;
-  color: #9ca3af;
+.site-brand__text .highlight {
+  color: #1db954;
 }
 
+/* Navigation Links */
 .site-nav {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
-.site-nav a {
-  font-size: 0.9rem;
+.nav-link {
   text-decoration: none;
-  color: #d1d5db;
-  padding: 0.35rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid transparent;
-}
-
-.site-nav a:hover {
-  border-color: #1db954;
-  background-color: rgba(17, 24, 39, 0.8);
-}
-
-.site-nav a.is-active {
-  background-color: #1db954;
-  color: #000;
-}
-
-/* ===== Main landing layout ===== */
-
-.landing-main {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 2rem 1rem 3rem;
-}
-
-.landing-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: 1.5rem;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.landing-hero__content h1 {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
-}
-
-.landing-hero__content p {
-  margin: 0;
-  color: #e5e7eb;
-  line-height: 1.5;
-}
-
-.landing-hero__panel {
-  background: radial-gradient(circle at top, #1db954 0, #0f172a 50%, #020617 100%);
-  border-radius: 1.25rem;
-  padding: 1.3rem 1.4rem;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.7);
-}
-
-/* Hide the panel completely if it has no content */
-.landing-hero__panel:empty {
-  display: none;
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  margin: 0;
-}
-
-.landing-hero__panel h2 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-size: 1.15rem;
-}
-
-.landing-hero__panel p {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.landing-hero__list {
-  margin-top: 0.75rem;
-  padding-left: 1.1rem;
-  font-size: 0.9rem;
-  color: #e5e7eb;
-}
-
-.landing-hero__list li + li {
-  margin-top: 0.25rem;
-}
-
-/* ===== Cards section ===== */
-
-.landing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-.landing-card {
-  background: rgba(12, 12, 12, 0.9);
-  border-radius: 1rem;
-  padding: 1.2rem 1.3rem;
-  border: 1px solid #1f2933;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-}
-
-.landing-card h2 {
-  margin-top: 0;
-  margin-bottom: 0.6rem;
-  font-size: 1.05rem;
-}
-
-.landing-card p {
-  margin: 0 0 0.9rem 0;
-  font-size: 0.9rem;
-  color: #e5e7eb;
-}
-
-.landing-card__footnote {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-.landing-card__link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.8rem;
-  margin-top: 0.4rem;
-  border-radius: 999px;
-  background-color: #1db954;
-  color: #000;
+  color: #b3b3b3; /* Default Gray text */
   font-size: 0.9rem;
   font-weight: 600;
-  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.landing-card__link:hover {
-  background-color: #22c55e;
+.nav-link:hover,
+.nav-link.is-active {
+  color: #1db954; /* Spotify Green (was #ffffff) */
+  background: rgba(29, 185, 84, 0.1); /* Green tint background (was white tint) */
 }
 
-/* ===== Responsive ===== */
-
-@media (max-width: 900px) {
-  .landing-hero {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .landing-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+/* Special Style for 'Database' button */
+.nav-link.nav-cta {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 0.5rem;
 }
 
-@media (max-width: 640px) {
-  .landing-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.nav-link.nav-cta:hover,
+.nav-link.nav-cta.is-active {
+  border-color: #1db954;
+  /* Background and Color are inherited from the general rule above, 
+     but we can keep them here to be safe */
+  background: rgba(29, 185, 84, 0.1);
+  color: #1db954;
+}
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
 
-  .landing-main {
-    padding-inline: 0.75rem;
-  }
-
-  .site-header__inner {
-    padding-inline: 0.75rem;
-  }
-
-  .site-header__title {
-    font-size: 1rem;
-  }
-
-  .site-header__subtitle {
-    font-size: 0.75rem;
-  }
-
-  .site-nav a {
-    font-size: 0.8rem;
-    padding-inline: 0.5rem;
-  }
+@media (max-width: 768px) {
+  .site-nav { display: none; }
+  .mobile-menu-toggle { display: block; }
 }
