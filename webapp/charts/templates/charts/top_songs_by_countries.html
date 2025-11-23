@@ -1,60 +1,93 @@
-<!-- Page listing songs that appear in the most countries' charts, with a bar chart and a table of country_counts. -->
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Top Global Hits by Countries – Global Spotify Hits</title>
-    <link
-      rel="stylesheet"
-      href="{% static 'charts/css/top_songs.css' %}"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Reach – Top Songs</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'charts/css/top_songs.css' %}" />
   </head>
   <body>
     {% include "charts/partials/header.html" with active_page="top_songs" %}
 
-    {# Main content area for this page #}
     <main class="page-container">
-      <h1>Top Songs by Number of Countries</h1>
-      <p class="subtitle">
-        Songs that appear in the largest number of country charts, based on the
-        2023 Spotify dataset.
-      </p>
+      <header class="content-header">
+        <div class="header-text">
+          <span class="badge">Global Analysis</span>
+          <h1>Global Market Reach</h1>
+          <p>Ranking tracks based on their presence across unique country charts in 2023.</p>
+        </div>
+      </header>
 
-      <section class="chart-container">
-        <h2>Bar Chart</h2>
-        <img
-          src="data:image/png;base64,{{ chart_image }}"
-          alt="Songs ranked by number of countries"
-        />
-      </section>
+      <div class="dashboard-grid">
+        
+        <section class="glass-panel chart-widget">
+          <div class="widget-header">
+            <h3><span class="icon">📊</span> Distribution Analysis</h3>
+            <div class="widget-controls">
+              <span class="control-item active">Bar Chart</span>
+              <span class="control-item">2023 Dataset</span>
+            </div>
+          </div>
+          <div class="widget-body">
+            <div class="chart-wrapper">
+              <img
+                src="data:image/png;base64,{{ chart_image }}"
+                alt="Bar chart showing songs ranked by number of countries"
+              />
+            </div>
+          </div>
+        </section>
 
-      <h2>Data Table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Track</th>
-            <th>Artist</th>
-            <th>Countries</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for song in songs %}
-          <tr>
-            <td class="rank-cell">{{ forloop.counter }}</td>
-            <td>{{ song.track_name }}</td>
-            <td>{{ song.artist }}</td>
-            <td class="countries-cell">{{ song.country_count }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="empty-message">No data available.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <section class="glass-panel table-widget">
+          <div class="widget-header">
+            <h3><span class="icon">🌍</span> Detailed Rankings</h3>
+          </div>
+          
+          <div class="table-scroll-area">
+            <table>
+              <thead>
+                <tr>
+                  <th width="10%">Rank</th>
+                  <th width="40%">Track</th>
+                  <th width="30%">Artist</th>
+                  <th width="20%" class="text-right">Markets</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for song in songs %}
+                <tr>
+                  <td>
+                    <div class="rank-badge {% if forloop.counter <= 3 %}top-3{% endif %}">
+                      {{ forloop.counter }}
+                    </div>
+                  </td>
+                  <td class="track-name">
+                    {{ song.track_name }}
+                  </td>
+                  <td class="artist-name">
+                    {{ song.artist }}
+                  </td>
+                  <td class="text-right">
+                    <span class="count-tag">{{ song.country_count }}</span>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-message">No data available.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
     </main>
   </body>
 </html>

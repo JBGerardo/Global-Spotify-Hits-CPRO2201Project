@@ -1,178 +1,347 @@
-/* ===== Base layout and background ===== */
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: radial-gradient(circle at top left, #1db954 0, #000 45%, #000 100%);
-  color: #f9fafb;
+/* ==========================================================================
+   File: top_songs.css
+   Description: Side-by-side Dashboard Layout with Gradient styling
+   ========================================================================== */
+
+:root {
+  --spotify-green: #1db954;
+  --spotify-dark: #121212;
+  --glass-bg: rgba(18, 18, 18, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --font-main: 'Inter', sans-serif;
 }
 
-/* Shared header bar */
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  
+  /* Background Gradient */
+  background-color: #000;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at top left, rgba(29, 185, 84, 0.4) 0%, #000 50%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+  background-repeat: repeat, repeat, no-repeat;
+  background-attachment: fixed;
+}
+
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ===== Header ===== */
+.content-header {
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--spotify-green);
+  background: rgba(29, 185, 84, 0.15);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(29, 185, 84, 0.3);
+}
+
+.content-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 800;
+}
+
+.content-header p {
+  color: #b3b3b3;
+  font-size: 1rem;
+}
+
+/* ===== Dashboard Grid Layout ===== */
+.dashboard-grid {
+  display: grid;
+  /* Chart takes 65%, Table takes 35% */
+  grid-template-columns: 2fr 1fr; 
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  /* Fixed height is crucial for the dashboard look */
+  height: 650px; 
+}
+
+.widget-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0; /* Prevents header from shrinking */
+}
+
+.widget-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ===== Chart Widget ===== */
+.chart-widget .widget-body {
+  flex-grow: 1;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.chart-wrapper img {
+  max-width: 100%;
+  max-height: 580px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.2));
+}
+
+/* ===== Table Widget (Fixed Scrolling) ===== */
+.table-widget {
+  overflow: hidden; /* Ensures rounded corners clip content */
+}
+
+.table-scroll-area {
+  /* FIXED: Use flex shorthand '1 1 0' to force basis to 0.
+     This ensures the scroll area respects the parent height 
+     instead of expanding to fit the table content. */
+  flex: 1 1 0; 
+  
+  overflow-y: auto; /* Allow vertical scroll */
+  padding: 0;
+  width: 100%;
+  
+  /* Firefox Scrollbar Support */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.02);
+}
+
+/* Webkit (Chrome/Safari) Scrollbar Styling */
+.table-scroll-area::-webkit-scrollbar {
+  width: 8px;
+}
+.table-scroll-area::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+.table-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.table-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: var(--spotify-green);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+/* Sticky Header */
+thead th {
+  position: sticky;
+  top: 0;
+  background: #181818; /* Solid background covers scrolling rows */
+  z-index: 10;
+  padding: 1rem;
+  text-align: left;
+  color: #b3b3b3;
+  font-weight: 600;
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+tbody td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  cursor: default;
+}
+
+.rank-badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #b3b3b3;
+}
+
+.rank-badge.top-3 {
+  background: var(--spotify-green);
+  color: #000;
+}
+
+.text-right { text-align: right; }
+
+/* Responsive: Lowered breakpoint so laptops keep side-by-side */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Stack on tablet portrait/mobile */
+    height: auto;
+  }
+  .glass-panel {
+    height: auto;
+    min-height: 500px;
+  }
+  .table-scroll-area {
+    max-height: 500px; /* Limit height on mobile to ensure scrolling */
+  }
+}
+
+.chart-wrapper img {
+  animation: wipeReveal 1.8s ease-out forwards;
+  transform-origin: left center;
+  opacity: 0;
+}
+
+@keyframes wipeReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+
+
+/* ===== Header Styles (Appended) ===== */
+
 .site-header {
-  background-color: #000000;
-  color: #f9fafb;
-  border-bottom: 1px solid #111827;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  backdrop-filter: blur(12px);      /* The glass blur effect */
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .site-header__inner {
-  max-width: 1120px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: 0 1.5rem;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.site-header__brand {
+/* Brand Logo */
+.site-brand {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
 }
 
-.site-header__title {
+.site-brand__icon {
+  color: #1db954; /* Spotify Green */
+  background: rgba(29, 185, 84, 0.1);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+}
+
+.site-brand__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.site-brand__text {
+  font-weight: 800;
   font-size: 1.1rem;
-  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-.site-header__subtitle {
-  font-size: 0.8rem;
-  color: #9ca3af;
+.site-brand__text .highlight {
+  color: #1db954;
 }
 
+/* Navigation Links */
 .site-nav {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
-.site-nav a {
-  font-size: 0.9rem;
+.nav-link {
   text-decoration: none;
-  color: #d1d5db;
-  padding: 0.35rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid transparent;
-}
-
-.site-nav a:hover {
-  border-color: #1db954;
-  background-color: rgba(17, 24, 39, 0.8);
-}
-
-.site-nav a.is-active {
-  background-color: #1db954;
-  color: #000;
-}
-
-/* ===== Page container ===== */
-
-.page-container {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 2rem 1rem 3rem;
-}
-
-.page-container h1 {
-  font-size: 1.6rem;
-  margin-bottom: 0.4rem;
-}
-
-.subtitle {
-  margin: 0 0 1.3rem 0;
-  color: #e5e7eb;
-  font-size: 0.95rem;
-}
-
-/* ===== Chart + table layout ===== */
-
-.chart-container {
-  background: rgba(12, 12, 12, 0.9);
-  border-radius: 1rem;
-  padding: 1.2rem 1.3rem;
-  border: 1px solid #1f2933;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-  margin-bottom: 1.5rem;
-}
-
-.chart-container h2 {
-  margin-top: 0;
-  margin-bottom: 0.8rem;
-  font-size: 1.1rem;
-}
-
-.chart-container img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.75rem;
-}
-
-/* ===== Table styling ===== */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.75rem;
+  color: #b3b3b3; /* Default Gray text */
   font-size: 0.9rem;
-}
-
-thead {
-  background: rgba(15, 23, 42, 0.9);
-}
-
-th,
-td {
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #1f2937;
-}
-
-th {
   font-weight: 600;
-  color: #f9fafb;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-td {
-  color: #e5e7eb;
+.nav-link:hover,
+.nav-link.is-active {
+  color: #1db954; /* Spotify Green */
+  background: rgba(29, 185, 84, 0.1); /* Green tint background */
 }
 
-tbody tr:nth-child(even) {
-  background-color: rgba(15, 23, 42, 0.5);
+/* Special Style for 'Database' button */
+.nav-link.nav-cta {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 0.5rem;
 }
 
-/* Column-specific alignment */
-.rank-cell {
-  width: 3rem;
-  text-align: right;
-  font-weight: 600;
+.nav-link.nav-cta:hover,
+.nav-link.nav-cta.is-active {
+  border-color: #1db954;
+  background: rgba(29, 185, 84, 0.1);
+  color: #1db954;
 }
 
-.countries-cell {
-  text-align: right;
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
-
-/* ===== Responsive adjustments ===== */
 
 @media (max-width: 768px) {
-  .page-container {
-    padding-inline: 0.75rem;
-  }
-
-  th,
-  td {
-    padding-inline: 0.5rem;
-  }
-
-  .site-header__inner {
-    padding-inline: 0.75rem;
-  }
-
-  .site-nav {
-    gap: 0.4rem;
-  }
-
-  .site-nav a {
-    font-size: 0.8rem;
-    padding-inline: 0.45rem;
-  }
+  .site-nav { display: none; }
+  .mobile-menu-toggle { display: block; }
 }
