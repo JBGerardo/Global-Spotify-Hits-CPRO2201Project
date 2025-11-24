@@ -1,55 +1,85 @@
-<!-- Page summarising how many unique tracks each country has in its charts, with a bar chart and a table. -->
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Country Chart Diversity – Global Spotify Hits</title>
-    <link
-      rel="stylesheet"
-      href="{% static 'charts/css/country_diversity.css' %}"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Reach – Top Songs</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'charts/css/top_songs.css' %}" />
   </head>
+
   <body>
     {% include "charts/partials/header.html" with active_page="country_diversity" %}
 
-    {# Main content area for this page #}
     <main class="page-container">
-      <h1>Country Chart Diversity</h1>
-      <p class="subtitle">
-        How many unique tracks appear in each country's Spotify chart for 2023.
-      </p>
 
-      <section class="chart-container">
-        <h2>Bar Chart</h2>
-        <img
-          src="data:image/png;base64,{{ chart_image }}"
-          alt="Unique tracks per country bar chart"
-        />
-      </section>
+      <header class="content-header">
+        <div class="header-text">
+          <span class="badge">Market Diversity</span>
+          <h1>Unique Tracks by Country</h1>
+          <p>Comparing how many unique songs appear in each country’s 2023 Spotify charts.</p>
+        </div>
+      </header>
 
-      <h2>Data Table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Unique Tracks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in diversity_rows %}
-          <tr>
-            <td>{{ row.country_label }}</td>
-            <td class="tracks-cell">{{ row.unique_tracks }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="2" class="empty-message">No data available.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="dashboard-grid">
+
+        <!-- LEFT: Chart -->
+        <section class="glass-panel chart-widget">
+          <div class="widget-header">
+            <h3><span class="icon">📊</span> Country Diversity Chart</h3>
+            <div class="widget-controls">
+              <span class="control-item active">Bar</span>
+              <span class="control-item">2023 Data</span>
+            </div>
+          </div>
+
+          <div class="widget-body">
+            <div class="chart-wrapper">
+              <img
+                src="data:image/png;base64,{{ chart_image }}"
+                alt="Unique tracks per country bar chart"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: Table -->
+        <section class="glass-panel table-widget">
+          <div class="widget-header">
+            <h3><span class="icon">🌍</span> Country Breakdown</h3>
+          </div>
+
+          <div class="table-scroll-area">
+            <table>
+              <thead>
+                <tr>
+                  <th width="60%">Country</th>
+                  <th width="40%" class="text-right">Unique Tracks</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in diversity_rows %}
+                <tr>
+                  <td>{{ row.country_label }}</td>
+                  <td class="text-right">{{ row.unique_tracks }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2" class="empty-message">No data available.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
     </main>
   </body>
 </html>

@@ -1,11 +1,12 @@
 /* ==========================================================================
    File: top_songs.css
-   Description: Side-by-side Dashboard Layout with Gradient styling
+   Description: Dashboard Layout & Database Browser Styles
    ========================================================================== */
 
 :root {
   --spotify-green: #1db954;
   --spotify-dark: #121212;
+  --spotify-grey: #b3b3b3;
   --glass-bg: rgba(18, 18, 18, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
   --font-main: 'Inter', sans-serif;
@@ -17,8 +18,6 @@ body {
   color: #ffffff;
   min-height: 100vh;
   overflow-x: hidden;
-  
-  /* Background Gradient */
   background-color: #000;
   background-image: 
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -35,54 +34,45 @@ body {
   padding: 2rem;
 }
 
-/* ===== Header ===== */
-.content-header {
-  margin-bottom: 2rem;
-}
+/* ===== Header Elements ===== */
+.content-header { margin-bottom: 2rem; }
 
-.badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--spotify-green);
-  background: rgba(29, 185, 84, 0.15);
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  margin-bottom: 0.5rem;
-  border: 1px solid rgba(29, 185, 84, 0.3);
-}
-
-.content-header h1 {
+h1 {
   font-size: 2.5rem;
   margin: 0 0 0.5rem 0;
   font-weight: 800;
 }
 
-.content-header p {
-  color: #b3b3b3;
+.subtitle {
+  color: var(--spotify-grey);
   font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  line-height: 1.5;
 }
 
-/* ===== Dashboard Grid Layout ===== */
+/* ===== Dashboard Grid & Panels ===== */
 .dashboard-grid {
   display: grid;
-  /* Chart takes 65%, Table takes 35% */
   grid-template-columns: 2fr 1fr; 
   gap: 1.5rem;
   align-items: start;
 }
 
-/* Glass Panels */
-.glass-panel {
+.glass-panel, .table-wrapper {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.glass-panel {
   display: flex;
   flex-direction: column;
-  /* Fixed height is crucial for the dashboard look */
   height: 650px; 
 }
 
@@ -93,7 +83,7 @@ body {
   justify-content: space-between;
   align-items: center;
   background: rgba(255, 255, 255, 0.02);
-  flex-shrink: 0; /* Prevents header from shrinking */
+  flex-shrink: 0; 
 }
 
 .widget-header h3 {
@@ -117,42 +107,24 @@ body {
   max-height: 580px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.2));
+  animation: wipeReveal 1.8s ease-out forwards;
+  transform-origin: left center;
+  opacity: 0;
 }
 
-/* ===== Table Widget (Fixed Scrolling) ===== */
-.table-widget {
-  overflow: hidden; /* Ensures rounded corners clip content */
-}
-
+/* ===== Table Styling ===== */
 .table-scroll-area {
-  /* FIXED: Use flex shorthand '1 1 0' to force basis to 0.
-     This ensures the scroll area respects the parent height 
-     instead of expanding to fit the table content. */
   flex: 1 1 0; 
-  
-  overflow-y: auto; /* Allow vertical scroll */
+  overflow-y: auto; 
   padding: 0;
   width: 100%;
-  
-  /* Firefox Scrollbar Support */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.02);
 }
 
-/* Webkit (Chrome/Safari) Scrollbar Styling */
-.table-scroll-area::-webkit-scrollbar {
-  width: 8px;
-}
-.table-scroll-area::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-}
-.table-scroll-area::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-}
-.table-scroll-area::-webkit-scrollbar-thumb:hover {
-  background: var(--spotify-green);
-}
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--spotify-green); }
 
 table {
   width: 100%;
@@ -160,18 +132,17 @@ table {
   font-size: 0.85rem;
 }
 
-/* Sticky Header */
 thead th {
   position: sticky;
   top: 0;
-  background: #181818; /* Solid background covers scrolling rows */
+  background: #181818; 
   z-index: 10;
   padding: 1rem;
   text-align: left;
-  color: #b3b3b3;
+  color: var(--spotify-grey);
   font-weight: 600;
   border-bottom: 1px solid var(--glass-border);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  white-space: nowrap;
 }
 
 tbody td {
@@ -180,10 +151,7 @@ tbody td {
   color: #fff;
 }
 
-tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  cursor: default;
-}
+tbody tr:hover { background-color: rgba(255, 255, 255, 0.08); }
 
 .rank-badge {
   width: 24px;
@@ -195,62 +163,151 @@ tbody tr:hover {
   background: rgba(255, 255, 255, 0.1);
   font-weight: 600;
   font-size: 0.75rem;
-  color: #b3b3b3;
+  color: var(--spotify-grey);
 }
 
-.rank-badge.top-3 {
-  background: var(--spotify-green);
-  color: #000;
-}
-
+.rank-badge.top-3 { background: var(--spotify-green); color: #000; }
 .text-right { text-align: right; }
 
-/* Responsive: Lowered breakpoint so laptops keep side-by-side */
-@media (max-width: 900px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr; /* Stack on tablet portrait/mobile */
-    height: auto;
-  }
-  .glass-panel {
-    height: auto;
-    min-height: 500px;
-  }
-  .table-scroll-area {
-    max-height: 500px; /* Limit height on mobile to ensure scrolling */
-  }
+/* ==========================================================================
+   Database Browser / Filter Styles
+   ========================================================================== */
+
+/* This section makes the filters horizontal and dark */
+.filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
 }
 
-.chart-wrapper img {
-  animation: wipeReveal 1.8s ease-out forwards;
-  transform-origin: left center;
-  opacity: 0;
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
 }
 
+.filter-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--spotify-grey);
+  letter-spacing: 0.05em;
+}
+
+/* Input Styling */
+.filters select,
+.filters input[type="text"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filters select:focus,
+.filters input[type="text"]:focus {
+  outline: none;
+  border-color: var(--spotify-green);
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  height: 44px;
+  cursor: pointer;
+}
+
+.filter-checkbox input {
+  accent-color: var(--spotify-green);
+  width: 18px;
+  height: 18px;
+}
+
+.filter-actions {
+  margin-left: auto;
+}
+
+.filter-actions button {
+  background-color: var(--spotify-green);
+  color: #000;
+  font-weight: 700;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  text-transform: uppercase;
+  min-height: 44px;
+  transition: transform 0.2s ease;
+}
+
+.filter-actions button:hover { transform: scale(1.05); }
+
+/* Table Wrapper for Browser */
+.table-wrapper { display: flex; flex-direction: column; }
+.table-scroll { overflow-x: auto; width: 100%; }
+.col-position, .col-streams { text-align: right; font-variant-numeric: tabular-nums; }
+.col-date, .col-country { white-space: nowrap; }
+.empty-message { text-align: center; padding: 4rem; color: var(--spotify-grey); font-style: italic; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.pagination__info { color: var(--spotify-grey); font-size: 0.85rem; }
+.pagination__links { display: flex; gap: 0.5rem; }
+
+.pagination__links a, .pagination__links span {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pagination__links a { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.pagination__links a:hover { background: var(--spotify-green); color: #000; }
+.pagination__links span.disabled { color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+/* Animation */
 @keyframes wipeReveal {
-  0% {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
 }
 
-
-
-/* ===== Header Styles (Appended) ===== */
-
+/* Header Styles */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1000;
   width: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-  backdrop-filter: blur(12px);      /* The glass blur effect */
+  background: rgba(0, 0, 0, 0.6); 
+  backdrop-filter: blur(12px);      
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -265,7 +322,6 @@ tbody tr:hover {
   justify-content: space-between;
 }
 
-/* Brand Logo */
 .site-brand {
   display: flex;
   align-items: center;
@@ -275,17 +331,14 @@ tbody tr:hover {
 }
 
 .site-brand__icon {
-  color: #1db954; /* Spotify Green */
+  color: #1db954; 
   background: rgba(29, 185, 84, 0.1);
   padding: 6px;
   border-radius: 50%;
   display: flex;
 }
 
-.site-brand__icon svg {
-  width: 20px;
-  height: 20px;
-}
+.site-brand__icon svg { width: 20px; height: 20px; }
 
 .site-brand__text {
   font-weight: 800;
@@ -293,20 +346,13 @@ tbody tr:hover {
   letter-spacing: -0.03em;
 }
 
-.site-brand__text .highlight {
-  color: #1db954;
-}
+.site-brand__text .highlight { color: #1db954; }
 
-/* Navigation Links */
-.site-nav {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
+.site-nav { display: flex; gap: 0.5rem; align-items: center; }
 
 .nav-link {
   text-decoration: none;
-  color: #b3b3b3; /* Default Gray text */
+  color: var(--spotify-grey);
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -314,20 +360,17 @@ tbody tr:hover {
   transition: all 0.2s ease;
 }
 
-.nav-link:hover,
-.nav-link.is-active {
-  color: #1db954; /* Spotify Green */
-  background: rgba(29, 185, 84, 0.1); /* Green tint background */
+.nav-link:hover, .nav-link.is-active {
+  color: #1db954; 
+  background: rgba(29, 185, 84, 0.1); 
 }
 
-/* Special Style for 'Database' button */
 .nav-link.nav-cta {
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin-left: 0.5rem;
 }
 
-.nav-link.nav-cta:hover,
-.nav-link.nav-cta.is-active {
+.nav-link.nav-cta:hover, .nav-link.nav-cta.is-active {
   border-color: #1db954;
   background: rgba(29, 185, 84, 0.1);
   color: #1db954;
@@ -341,7 +384,21 @@ tbody tr:hover {
   cursor: pointer;
 }
 
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .filter-actions { margin-left: 0; }
+  .filter-actions button { width: 100%; }
+}
+
 @media (max-width: 768px) {
   .site-nav { display: none; }
   .mobile-menu-toggle { display: block; }
+}
+
+/* Fix for the dropdown popup list */
+.filters select option {
+  background-color: #121212; /* Dark background */
+  color: #ffffff;            /* White text */
+  padding: 10px;
 }
