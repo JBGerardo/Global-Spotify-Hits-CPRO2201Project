@@ -1,60 +1,102 @@
-<!-- Page showing the top 10 songs by total streams across all countries, with a Matplotlib bar chart and a summary table. -->
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Top Global Streams – Global Spotify Hits</title>
-    <link
-      rel="stylesheet"
-      href="{% static 'charts/css/top_streams.css' %}"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Reach – Top Songs</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'charts/css/top_songs.css' %}" />
   </head>
+
   <body>
+    <!-- 🔥 Correct usage of shared header -->
     {% include "charts/partials/header.html" with active_page="top_streams" %}
 
-    {# Main content area for this page #}
     <main class="page-container">
-      <h1>Top 10 Songs by Total Global Streams</h1>
-      <p class="subtitle">
-        Songs with the highest total number of streams across all included
-        countries in the 2023 Spotify charts.
-      </p>
+      <header class="content-header">
+        <div class="header-text">
+          <span class="badge">Global Streams</span>
+          <h1>Top 10 Songs by Total Streams</h1>
+          <p>
+            Ranking songs based on total global streams across all countries in the 2023 Spotify dataset.
+          </p>
+        </div>
+      </header>
 
-      <section class="chart-container">
-        <h2>Bar Chart</h2>
-        <img
-          src="data:image/png;base64,{{ chart_image }}"
-          alt="Top songs by total streams bar chart"
-        />
-      </section>
+      <div class="dashboard-grid">
 
-      <h2>Data Table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Track</th>
-            <th>Artist</th>
-            <th>Total Streams</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for track in tracks %}
-          <tr>
-            <td class="rank-cell">{{ forloop.counter }}</td>
-            <td>{{ track.track_name }}</td>
-            <td>{{ track.artist }}</td>
-            <td class="streams-cell">{{ track.total_streams }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="empty-message">No data available.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <!-- ===== CHART PANEL ===== -->
+        <section class="glass-panel chart-widget">
+          <div class="widget-header">
+            <h3><span class="icon">📈</span> Stream Volume Analysis</h3>
+
+            <div class="widget-controls">
+              <span class="control-item active">Bar Chart</span>
+              <span class="control-item">2023 Data</span>
+            </div>
+          </div>
+
+          <div class="widget-body">
+            <div class="chart-wrapper">
+              <img
+                src="data:image/png;base64,{{ chart_image }}"
+                alt="Bar chart showing top songs by total streams"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== TABLE PANEL ===== -->
+        <section class="glass-panel table-widget">
+          <div class="widget-header">
+            <h3><span class="icon">🎵</span> Stream Rankings</h3>
+          </div>
+
+          <div class="table-scroll-area">
+            <table>
+              <thead>
+                <tr>
+                  <th width="10%">Rank</th>
+                  <th width="40%">Track</th>
+                  <th width="30%">Artist</th>
+                  <th width="20%" class="text-right">Streams</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for track in tracks %}
+                <tr>
+                  <td>
+                    <div class="rank-badge {% if forloop.counter <= 3 %}top-3{% endif %}">
+                      {{ forloop.counter }}
+                    </div>
+                  </td>
+
+                  <td class="track-name">{{ track.track_name }}</td>
+                  <td class="artist-name">{{ track.artist }}</td>
+
+                  <td class="text-right">
+                    <span class="count-tag">{{ track.formatted_streams }}</span>
+                  </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-message">No data available.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+            </table>
+          </div>
+        </section>
+
+      </div>
     </main>
   </body>
 </html>
