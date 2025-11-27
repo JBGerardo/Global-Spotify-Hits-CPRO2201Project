@@ -38,6 +38,13 @@ COUNTRY_LABELS = {
     "br": "Brazil (BR)",
     "mx": "Mexico (MX)",
     "jp": "Japan (JP)",
+    "ng": "Nigeria (NG)",
+    "fi": "Finland (FI)",
+    "ch": "Switzerland (CH)",
+    "no": "Norway (NO)",
+    "se": "Sweden (SE)",
+    "dk": "Denmark (DK)",
+    "lu": "Luxembourg (LU)",
     # Other codes will fallback to uppercase
 }
 

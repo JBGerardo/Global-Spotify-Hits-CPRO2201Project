@@ -7,36 +7,108 @@ body {
   color: #f9fafb;
 }
 
-/* Header (matching landing.css) */
+/* ===== Header Styles (Appended) ===== */
+
 .site-header {
-  background-color: #000000;
-  color: #f9fafb;
-  border-bottom: 1px solid #111827;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  backdrop-filter: blur(12px);      /* The glass blur effect */
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .site-header__inner {
-  max-width: 1120px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: 0 1.5rem;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.site-header__brand {
+/* Brand Logo */
+.site-brand {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
 }
 
-.site-header__title {
+.site-brand__icon {
+  color: #1db954; /* Spotify Green */
+  background: rgba(29, 185, 84, 0.1);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+}
+
+.site-brand__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.site-brand__text {
+  font-weight: 800;
   font-size: 1.1rem;
-  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-.site-header__subtitle {
-  font-size: 0.8rem;
-  color: #9ca3af;
+.site-brand__text .highlight {
+  color: #1db954;
+}
+
+/* Navigation Links */
+.site-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #b3b3b3; /* Default Gray text */
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+  color: #1db954; /* Spotify Green */
+  background: rgba(29, 185, 84, 0.1); /* Green tint background */
+}
+
+/* Special Style for 'Database' button */
+.nav-link.nav-cta {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 0.5rem;
+}
+
+.nav-link.nav-cta:hover,
+.nav-link.nav-cta.is-active {
+  border-color: #1db954;
+  background: rgba(29, 185, 84, 0.1);
+  color: #1db954;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .site-nav { display: none; }
+  .mobile-menu-toggle { display: block; }
 }
 
 /* Simple pill navigation */
