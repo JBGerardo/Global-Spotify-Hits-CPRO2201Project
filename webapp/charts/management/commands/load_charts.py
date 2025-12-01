@@ -31,10 +31,6 @@ class Command(BaseCommand):
     """
     Django management command class.
 
-    Django discovers this command because:
-    - It is in charts/management/commands/
-    - The file name is load_charts.py
-    - The class is named Command and subclasses BaseCommand.
     """
 
     help = "Load Spotify chart data from CSV into the ChartEntry model."
@@ -43,11 +39,8 @@ class Command(BaseCommand):
         """
         Define command-line arguments.
 
-        --file:
-            Name of the CSV file inside the data/raw folder at the project root.
-            The default is charts_2023.csv, which matches this project.
         --limit:
-            Optional integer. If provided, we only load the first N rows
+            If provided, we only load the first N rows
             from the CSV. This is mainly for quick testing.
         """
         parser.add_argument(
@@ -77,9 +70,6 @@ class Command(BaseCommand):
         csv_name = options["file"]
         limit = options.get("limit")
 
-        # We let load_spotify_charts handle the actual path resolution and
-        # FileNotFoundError. We wrap that in CommandError so the CLI output
-        # is nice and consistent with other Django commands.
         try:
             df = load_spotify_charts(csv_name)
         except FileNotFoundError as exc:
@@ -108,7 +98,6 @@ class Command(BaseCommand):
         if missing:
             raise CommandError(f"Missing required columns in DataFrame: {missing}")
 
-        # Optional but convenient during development:
         # We clear existing data so that rerunning the command replaces it
         # with a fresh copy from the CSV.
         self.stdout.write(self.style.WARNING("Deleting existing ChartEntry rows..."))

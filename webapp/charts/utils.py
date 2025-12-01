@@ -7,7 +7,7 @@ from matplotlib.patches import FancyBboxPatch
 
 def get_spotify_chart(labels, values, title, xlabel, orientation='h'):
     """
-    Generates a high-quality Spotify-style chart.
+    Generates Spotify-style chart.
     Fixes rendering artifacts and clipping issues on top bars.
     """
     # 1. Setup Theme
@@ -41,7 +41,6 @@ def get_spotify_chart(labels, values, title, xlabel, orientation='h'):
         # Add breathing room for labels on the right
         ax.set_xlim(0, max(values) * 1.15)
         
-        # FIX: Explicitly set Y-limits to prevent the top bar from being clipped
         # Indices run from 0 to N-1. We extend limits to -0.6 and N-0.4
         # to ensure the rounded corners of the first and last bars are fully visible.
         ax.set_ylim(-0.6, len(clean_labels) - 0.4)

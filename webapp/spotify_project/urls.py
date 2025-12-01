@@ -1,6 +1,4 @@
 """
-Project-level URL configuration for the Global Spotify Hits web app.
-
 - expose the Django admin under "/admin/"
 - route the root URL ("/") to the charts landing page
 - include all charts-related URLs under the "/charts/" prefix
