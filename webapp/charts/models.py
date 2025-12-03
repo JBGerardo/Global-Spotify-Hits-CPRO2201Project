@@ -1,6 +1,31 @@
 from django.db import models
 
 
+COUNTRY_LABELS = {
+    "global": "Global",
+    "us": "United States (US)",
+    "gb": "United Kingdom (GB)",
+    "ca": "Canada (CA)",
+    "au": "Australia (AU)",
+    "de": "Germany (DE)",
+    "fr": "France (FR)",
+    "br": "Brazil (BR)",
+    "mx": "Mexico (MX)",
+    "jp": "Japan (JP)",
+    # Any other code will fall back to UPPERCASE
+}
+
+
+def pretty_country(code: str) -> str:
+    """
+    Convert a country code from the dataset into a human-friendly label.
+    """
+    if not code:
+        return "Unknown"
+    code = str(code).lower()
+    return COUNTRY_LABELS.get(code, code.upper())
+
+
 class ChartEntry(models.Model):
     """
     ChartEntry model
@@ -64,6 +89,7 @@ class ChartEntry(models.Model):
 
         - indexes: speed up common queries by country, track_name, artist and date.
         - ordering: default ordering when we call ChartEntry.objects.all().
+        - constraints: enforce that (date, country, position) is unique.
         """
 
         indexes = [
@@ -73,6 +99,12 @@ class ChartEntry(models.Model):
             models.Index(fields=["date"]),
         ]
         ordering = ["country", "date", "position"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["date", "country", "position"],
+                name="unique_chart_row_per_day_country_position",
+            )
+        ]
 
     def __str__(self) -> str:
         """
@@ -82,3 +114,10 @@ class ChartEntry(models.Model):
             "Song Title - Artist Name (us, 2023-01-01, #1)"
         """
         return f"{self.track_name} - {self.artist} ({self.country}, {self.date}, #{self.position})"
+
+    @property
+    def country_label(self) -> str:
+        """
+        Human-friendly country label for use in templates.
+        """
+        return pretty_country(self.country)

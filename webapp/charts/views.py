@@ -12,57 +12,14 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Sum, Q
 from django.shortcuts import render
 
-# Import models
-from .models import ChartEntry
-
-# Import our custom chart styling utility
+from .models import ChartEntry, pretty_country
 from .utils import get_spotify_chart
 
 import matplotlib
+
 # Use a non-interactive backend so Matplotlib can run on the server
 # without needing a display (standard for Django projects).
 matplotlib.use("Agg")
-
-
-# ---------- Country label helpers ----------
-
-# Mapping from country code to a human-friendly label.
-COUNTRY_LABELS = {
-    "global": "Global",
-    "us": "United States (US)",
-    "gb": "United Kingdom (GB)",
-    "ca": "Canada (CA)",
-    "au": "Australia (AU)",
-    "de": "Germany (DE)",
-    "fr": "France (FR)",
-    "br": "Brazil (BR)",
-    "mx": "Mexico (MX)",
-    "jp": "Japan (JP)",
-    "ng": "Nigeria (NG)",
-    "fi": "Finland (FI)",
-    "ch": "Switzerland (CH)",
-    "no": "Norway (NO)",
-    "se": "Sweden (SE)",
-    "dk": "Denmark (DK)",
-    "lu": "Luxembourg (LU)",
-    # Other codes will fallback to uppercase
-}
-
-
-def code_upper(code_lower: str) -> str:
-    """Helper: convert a country code string to uppercase safely."""
-    try:
-        return code_lower.upper()
-    except AttributeError:
-        return code_lower
-
-
-def pretty_country(code: str) -> str:
-    """Return a human-readable country name for a given country code."""
-    if not code:
-        return ""
-    code_lower = str(code).lower()
-    return COUNTRY_LABELS.get(code_lower, code_upper(code_lower))
 
 
 # ---------- Views ----------
@@ -96,7 +53,7 @@ def top_streams(request):
         values=values,
         title="Top 10 Tracks by Total Streams",
         xlabel="Total Streams",
-        orientation='h'
+        orientation="h",
     )
 
     context = {
@@ -129,7 +86,7 @@ def top_songs_by_countries(request):
         values=values,
         title="Global Reach: Top 10 Hits by Country Count",
         xlabel="Number of Countries",
-        orientation='h'
+        orientation="h",
     )
 
     context = {
@@ -170,7 +127,7 @@ def country_diversity(request):
         values=values,
         title="Market Diversity: Unique Tracks per Country",
         xlabel="Unique Tracks Count",
-        orientation='v'  # Vertical bars look better for country names
+        orientation="v",  # Vertical bars look better for country names
     )
 
     context = {
@@ -199,8 +156,20 @@ def chart_browser(request):
         if c is not None
     ]
 
-    month_names = ["January", "February", "March", "April", "May", "June", 
-                   "July", "August", "September", "October", "November", "December"]
+    month_names = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
     months = [{"value": i + 1, "label": month_names[i]} for i in range(12)]
 
     # -------- Read filter values --------
@@ -234,10 +203,6 @@ def chart_browser(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # Attach pretty_country labels
-    for entry in page_obj.object_list:
-        entry.pretty_country = pretty_country(entry.country)
-
     context = {
         "active_page": "browser",
         "page_obj": page_obj,
@@ -249,3 +214,4 @@ def chart_browser(request):
         "explicit_only": explicit_only,
     }
     return render(request, "charts/chart_browser.html", context)
+# ---------- End of Views ----------
