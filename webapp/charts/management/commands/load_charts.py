@@ -11,15 +11,28 @@ class Command(BaseCommand):
     """
     Load Spotify chart data from CSV into the ChartEntry table.
 
+<<<<<<< HEAD
     Usage examples:
         python manage.py load_charts --reset
         python manage.py load_charts --file charts_2023.csv --limit 5000 --reset
         python manage.py load_charts --file charts_2023.csv
+=======
+>>>>>>> 06ba461f5812338f4ecefba887a22e90ebc4dc40
     """
 
     help = "Load Spotify chart data from data/raw/*.csv into the ChartEntry table."
 
     def add_arguments(self, parser):
+<<<<<<< HEAD
+=======
+        """
+        Define command-line arguments.
+
+        --limit:
+            If provided, we only load the first N rows
+            from the CSV. This is mainly for quick testing.
+        """
+>>>>>>> 06ba461f5812338f4ecefba887a22e90ebc4dc40
         parser.add_argument(
             "--file",
             default="charts_2023.csv",
@@ -41,6 +54,7 @@ class Command(BaseCommand):
         limit = options.get("limit")
         reset = options.get("reset", False)
 
+<<<<<<< HEAD
         # data/ folder is one level above the Django project (webapp/)
         base_dir = Path(settings.BASE_DIR).parent
         csv_path = base_dir / "data" / "raw" / filename
@@ -51,6 +65,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE(f"Loading data from {csv_path}"))
 
         # Load CSV with pandas
+=======
+>>>>>>> 06ba461f5812338f4ecefba887a22e90ebc4dc40
         try:
             df = pd.read_csv(csv_path)
         except Exception as exc:
@@ -103,8 +119,15 @@ class Command(BaseCommand):
                 f"CSV file is missing required columns even after mapping: {sorted(missing)}"
             )
 
+<<<<<<< HEAD
         # Convert date column
         df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.date
+=======
+        # We clear existing data so that rerunning the command replaces it
+        # with a fresh copy from the CSV.
+        self.stdout.write(self.style.WARNING("Deleting existing ChartEntry rows..."))
+        ChartEntry.objects.all().delete()
+>>>>>>> 06ba461f5812338f4ecefba887a22e90ebc4dc40
 
         # Optional columns
         if "artist_genres" not in df.columns:

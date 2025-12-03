@@ -9,13 +9,8 @@ It prints:
 - chart diversity per country
 - top songs by total streams
 
-This script is written in a simple, step-by-step style to match
-the level of CPRO 2201 (Python II).
 """
 
-# Import the analysis functions from the file in the same folder.
-# Because run_basic_analysis.py and spotify_analysis.py are both inside
-# the "analysis" directory, we can import directly from spotify_analysis.
 from spotify_analysis import (
     load_spotify_charts,
     compute_country_song_counts,
@@ -35,8 +30,6 @@ def main():
     """
 
     # 1) Name of the CSV file we want to analyze.
-    #    The load_spotify_charts function will look for this file
-    #    inside the data/raw directory at the project root.
     csv_name = "charts_2023.csv"
 
     # 2) Load the DataFrame using our helper function.
@@ -52,9 +45,6 @@ def main():
     print("Columns:", list(df.columns))
     print()
 
-    # Optionally, you could also show the first few rows:
-    # print(df.head())
-    # print()
 
     # 4) Top songs by number of countries they appear in.
     try:

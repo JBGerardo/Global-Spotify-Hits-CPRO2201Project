@@ -1,5 +1,5 @@
 """
-Django views for the Global Spotify Hits project (CPRO 2201 - Python II).
+Django views for the Global Spotify Hits project.
 
 This file handles the logic for:
 1. Fetching data from the database (ChartEntry model).
@@ -16,9 +16,12 @@ from .models import ChartEntry, pretty_country
 from .utils import get_spotify_chart
 
 import matplotlib
+<<<<<<< HEAD
 
 # Use a non-interactive backend so Matplotlib can run on the server
 # without needing a display (standard for Django projects).
+=======
+>>>>>>> 06ba461f5812338f4ecefba887a22e90ebc4dc40
 matplotlib.use("Agg")
 
 

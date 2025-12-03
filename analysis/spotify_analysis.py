@@ -1,14 +1,4 @@
 """spotify_analysis.py
-
-Simpler, step-by-step data loading and analysis functions for the
-Global Spotify Hits project (CPRO 2201 - Python II).
-
-This module only uses core Pandas features that are very close to
-what we saw in class:
-- read_csv
-- basic column selection
-- groupby with nunique / sum
-- sorting with sort_values
 """
 
 from pathlib import Path
@@ -36,8 +26,6 @@ def load_spotify_charts(csv_name):
         ``track_name``, ``artist``, ``country``, ``date``,
         ``position`` and ``streams``.
 
-    This function is intentionally written in a very
-    step-by-step style so that it is easy to follow.
     """
 
     # 1) Build the full path to the CSV file.
@@ -48,13 +36,10 @@ def load_spotify_charts(csv_name):
         raise FileNotFoundError(f"CSV not found at: {csv_path}")
 
     # 3) Read the CSV file into a DataFrame.
-    #    This is the same function we used in the Pandas notes.
     df = pd.read_csv(csv_path)
 
     # 4) Normalise the column names so that the rest of the code
     #    can use the same names every time.
-    #    The original file has a "name" column for the song title
-    #    and an "artists" column for the artist name.
     rename_map = {
         "name": "track_name",
         "artists": "artist",
